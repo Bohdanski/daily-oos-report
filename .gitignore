@@ -1,0 +1,43 @@
+# JPEG
+*.jpg
+*.jpeg
+*.jpe
+*.jif
+*.jfif
+*.jfi
+
+# Icon
+#*.ico
+
+# Graphics Interchange Format
+*.gif
+
+# Portable Network Graphics
+*.png
+
+# Portable Document Format
+*.pdf
+
+# lst
+*.lst
+
+# Visual Studio
+*.vs
+
+# Log
+*.log
+
+# Credentials
+credentials.py
+
+# Cache
+__pycache__/
+
+# Driver Folder
+chromedriver_win32/
+
+# Data Folder
+data/
+
+# Excel Folder
+excel/
