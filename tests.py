@@ -28,13 +28,6 @@ def create_timestamp():
 
     return timestamp
 
-def find_sheet(sheet_list, sheet_name):
-    """
-    If a workbook matches the desired name
-    store each worksheet into a list.
-    """
-    return [x for x in sheet_list if re.search(sheet_name.lower(), x.lower())]
-
 def main():
     """
     Main guts of the script.
@@ -91,32 +84,31 @@ def main():
                                      "itemCode",
                                      "yesterdayOOS"]
                 df_shorts.drop(columns=["itemDesc"], inplace=True)
-            elif fnmatch.fnmatch(xl_file.lower(), "*detail*.xlsx") == True:
-                df_detail = workbook.parse(0, skiprows=1, header=None)
-                df_detail.columns = ["dept",
-                                     "category",
-                                     "itemDesc",
-                                     "itemCode",
-                                     "itemSize",
-                                     "pvtLblFlag",
-                                     "buyerCode",
-                                     "invUnitShipped",
-                                     "invCaseShipped",
-                                     "storeOrdProdQty",
-                                     "shortedQty",
-                                     "grossSvcLvl",
-                                     "netSvcLvl"]
-                df_detail["buyerCode"] = df_detail["buyerCode"] * 10
-                df_detail["itemDesc"] = df_detail["itemDesc"] + "   " + df_detail["itemSize"]
+            elif fnmatch.fnmatch(xl_file.lower(), "*base*.xlsx") == True:
+                df_base = workbook.parse(0, skiprows=1, header=None)
+                df_base.columns = ["dept", 
+                                   "category", 
+                                   "itemDesc", 
+                                   "itemCode", 
+                                   "itemSize", 
+                                   "pvtLblFlag", 
+                                   "buyerCode", 
+                                   "invUnitShipped", 
+                                   "invCaseShipped", 
+                                   "storeOrdProdQty", 
+                                   "shortedQty", 
+                                   "grossSvcLvl", 
+                                   "netSvcLvl"]
+                df_base["buyerCode"] = df_base["buyerCode"] * 10
+                df_base["itemDesc"] = df_base["itemDesc"] + "   " + df_base["itemSize"]
 
-        df_join_1 = df_detail.merge(df_reason, how="left", on="itemCode")
+        df_join_1 = df_base.merge(df_reason, how="left", on="itemCode")
         df_join_2 = df_join_1.merge(df_shorts, how="left", on="itemCode")
 
         df_join_2["poDueDate"] = "NO CS DATA"
         df_join_2["poApptDate"] = "NO CS DATA"
         df_join_2["inStock"] = "NO CS DATA"
         df_join_2["daysOOS"] = "NO CS DATA"
-        df_join_2["InstockOrDueDate"] = "NO CS DATA"
 
         df_join_2.to_excel(f".\\excel\\archive\\oos-data-{create_timestamp()}.xlsx")
 
