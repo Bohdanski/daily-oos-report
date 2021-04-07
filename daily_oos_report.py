@@ -4,6 +4,7 @@ Builds the datasheet for the daily out-of-stock report.
 
 import os
 import re
+import sys
 import glob
 import zipfile
 import fnmatch
@@ -17,6 +18,7 @@ from pandas import DataFrame
 from datetime import datetime
 from openpyxl import load_workbook
 
+
 def timestamp():
     """
     Creates a timestamp in DB format.
@@ -24,6 +26,7 @@ def timestamp():
     timestamp = datetime.today().strftime('%Y-%m-%d')
     
     return timestamp
+
 
 def main():
     """
@@ -125,6 +128,11 @@ def main():
 
                 print(f"'{xl_file}' Successfully processed\n")
 
+        for data_file in os.listdir(data_dir):
+            if fnmatch.fnmatch(data_file, "*.xlsx") == True:
+                print(f"Deleting '{data_file}'...\n")
+                os.remove(data_dir + data_file)
+
         df_join_1 = df_base.merge(df_reason, how="left", on="itemCode")
         df_join_2 = df_join_1.merge(df_shorts, how="left", on="itemCode")
         df_join_3 = df_join_2.merge(df_cs, how="left", on="itemCode")
@@ -132,10 +140,7 @@ def main():
         print("Exporting to Excel...\n")
         df_join_3.to_excel(f".\\excel\\archive\\oos-data-{timestamp()}.xlsx", index=False)
 
-        for data_file in os.listdir(data_dir):
-            if fnmatch.fnmatch(data_file, "*.xlsx") == True:
-                print(f"Deleting '{data_file}'...")
-                os.remove(data_dir + data_file)
+        sys.exit(0)
     except:
         try:
             df_join_1 = df_base.merge(df_reason, how="left", on="itemCode")
@@ -146,15 +151,16 @@ def main():
             df_join_2["inStock"] = "NO CS DATA"
             df_join_2["daysOOS"] = "NO CS DATA"
             
-            print("Exporting to Excel...")
+            print("Exporting to Excel...\n")
             df_join_2.to_excel(f".\\excel\\archive\\oos-data-{timestamp()}.xlsx", index=False)
         except:
             if not os.path.exists(archive_dir):
                 os.makedirs(archive_dir)
             if not os.path.exists(data_dir):
                 os.makedirs(data_dir)
-    finally:
-        exit()
+
+            sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

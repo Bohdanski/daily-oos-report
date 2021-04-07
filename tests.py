@@ -131,11 +131,6 @@ def main():
         
         print("Exporting to Excel...\n")
         df_join_3.to_excel(f".\\excel\\archive\\oos-data-{timestamp()}.xlsx", index=False)
-
-        for data_file in os.listdir(data_dir):
-            if fnmatch.fnmatch(data_file, "*.xlsx") == True:
-                print(f"Deleting '{data_file}'...")
-                os.remove(data_dir + data_file)
     except:
         try:
             df_join_1 = df_base.merge(df_reason, how="left", on="itemCode")
@@ -146,7 +141,7 @@ def main():
             df_join_2["inStock"] = "NO CS DATA"
             df_join_2["daysOOS"] = "NO CS DATA"
             
-            print("Exporting to Excel...")
+            print("Exporting to Excel...\n")
             df_join_2.to_excel(f".\\excel\\archive\\oos-data-{timestamp()}.xlsx", index=False)
         except:
             if not os.path.exists(archive_dir):
@@ -154,6 +149,11 @@ def main():
             if not os.path.exists(data_dir):
                 os.makedirs(data_dir)
     finally:
+        for data_file in os.listdir(data_dir):
+            if fnmatch.fnmatch(data_file, "*.xlsx") == True:
+                print(f"Deleting '{data_file}'...\n")
+                os.remove(data_dir + data_file)
+                
         exit()
 
 if __name__ == "__main__":
